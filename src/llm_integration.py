@@ -1,15 +1,46 @@
 import os
 import time
+from datetime import datetime
 from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
+def get_current_context_trigger():
+    """
+    Detecta automaticamente a data, dia da semana e horário atual
+    para definir o gatilho contextual mais assertivo para a campanha.
+    """
+    agora = datetime.now()
+    hora = agora.hour
+    dia_semana = agora.weekday()  # 0 = Segunda, ..., 4 = Sexta, 5 = Sábado, 6 = Domingo
+    dia_mes = agora.day
+
+    dias_nomes = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"]
+    nome_dia = dias_nomes[dia_semana]
+    horario_str = agora.strftime("%H:%M")
+
+    # 1. Verifica gatilhos especiais de calendário primeiro
+    if dia_mes >= 25:
+        contexto = "Fim do Mês (foco em economia inteligente, custo-benefício e cupom para salvar o orçamento)"
+    elif dia_semana == 4 and hora >= 18:
+        contexto = "Sexta-feira à Noite ('Sextou!', clima de celebração, descanso e recompensa pela semana)"
+    # 2. Verifica a janela de horário do dia
+    elif 11 <= hora < 15:
+        contexto = "Horário de Almoço (foco em rapidez, praticidade e matar a fome agora)"
+    elif 15 <= hora < 18:
+        contexto = "Café da Tarde (foco em pausa merecida, lanche rápido ou doce)"
+    elif 18 <= hora <= 23:
+        contexto = "Horário de Jantar (foco em conforto, praticidade para não precisar cozinhar hoje)"
+    else:
+        contexto = "Manhã / Madrugada (foco em garantir desconto antecipado para o almoço de hoje)"
+
+    return f"{nome_dia}, {horario_str} (Dia {dia_mes}) -> Gatilho Ativo: {contexto}"
+
 def generate_targeted_marketing_copy(shap_summary_df):
     """
-    Usa o LLM (Gemini) integrando os fatos matemáticos do SHAP
-    para gerar copies curtas, bem-humoradas e orientadas a gatilhos mentais
-    para diferentes momentos de consumo e contextos.
+    Usa o LLM (Gemini) integrando os fatos matemáticos do SHAP e o contexto
+    temporal em tempo real (data/hora) para gerar uma copy hiperpersonalizada.
     """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -17,53 +48,53 @@ def generate_targeted_marketing_copy(shap_summary_df):
         
     client = genai.Client(api_key=api_key)
     
-    prompt = f"""
-    Atue como um cientista de dados sênior e estrategista de marketing digital de varejo.
-    O nosso modelo de Machine Learning (Random Forest) identificou que um cliente específico possui altíssima propensão de compra.
-    Abaixo estão os fatores determinantes extraídos matematicamente pelo algoritmo SHAP que explicaram essa propensão:
+    # Captura o momento exato da execução
+    contexto_temporal = get_current_context_trigger()
+    print(f"-> Contexto Temporal Detectado: {contexto_temporal}")
     
-    Abaixo estão os fatores comportamentais exatos extraídos via SHAP que explicam o perfil desse cliente:
+    prompt = f"""
+    Atue como um Copywriter Sênior especialista em Growth Marketing e psicologia do consumidor para delivery e varejo (estilo iFood).
+    Nosso modelo preditivo de Machine Learning identificou um cliente com altíssima propensão de compra neste exato momento.
+    
+    CONTEXTO TEMPORAL ATUAL (MOMENTO DO DISPARO):
+    {contexto_temporal}
+    
+    FATORES COMPORTAMENTAIS DO CLIENTE (EXTRAÍDOS VIA SHAP):
     {shap_summary_df.to_string(index=False)}
     
     TAREFA:
-   Com base nesses fatos exatos, crie um e-mail de marketing persuasivo, elegante oferecendo um benefício comercial ou desconto alinhado aos padrões de consumo revelados pelas variáveis de maior impacto positivo.
-    REGRAS OBRIGATÓRIAS PARA TODAS AS 6 VARIAÇÕES:
-    - Tom de voz: Curto, leve, informal e bem-humorado (use trocadilhos leves, linguagem próxima e emojis estratégicos, sem exageros).
-    - Benefício Imediato no 1º Parágrafo: Destaque o cupom de desconto, frete grátis ou oferta logo na primeira frase/parágrafo. Não faça introduções longas.
-    - Gatilhos Mentais: Aplique explicitamente escassez, urgência (ex: "válido pelas próximas 2 horas", "só hoje") e recompensa imediata.
-    - Personalização: Conecte sutilmente a oferta aos produtos favoritos do cliente apontados pelo SHAP (sem citar termos técnicos como "SHAP" ou "variável").
-    - Adaptação ao Contexto: Conecte a oferta diretamente ao momento do envio. Use estas referências de abordagem conforme o cenário:
-       - *Almoço / Jantar:* Foco em praticidade, matar a fome rápido e não precisar cozinhar ou lavar louça.
-       - *Café da tarde:* Foco em pausa merecida, aquele docinho, café ou lanche rápido para dar energia.
-       - *Chuva:* Foco em conforto, ficar no sofá sem sair de casa enquanto o pedido chega quentinho.
-       - *Sexta-feira à noite:* Foco em "sextou", celebração, pedir algo especial sem culpa e relaxar.
-    - Tamanho: Máximo de 3 parágrafos bem curtos por cenário (ideal para leitura rápida na tela do celular).
-    - Call-to-Action (CTA) Curto:** Termine com uma chamada para ação direta, imperativa e de no máximo 5 palavras (ex: "Resgate seu cupom agora!", "Pedir com desconto", "Aproveitar antes que acabe").
+    Crie UMA ÚNICA campanha curta (e-mail/push) totalmente adaptada ao CONTEXTO TEMPORAL ATUAL acima e alinhada aos produtos/hábitos de maior impacto positivo revelados pelo SHAP (ex: carnes, frutas, vinhos, compra recente, etc.).
+
+    REGRAS OBRIGATÓRIAS:
+    - Tom de voz: Curto, leve, envolvente e bem-humorado.
+    - Regra do 1º Parágrafo: Evidencie o CUPOM DE DESCONTO e o benefício financeiro logo na primeira frase/parágrafo liberado uso contido de emojis para reforçar a mensagem.
+    - Gatilhos Mentais: Aplique explicitamente escassez, urgência ligada ao horário atual (ex: "válido só para este almoço", "expira em 2 horas") e recompensa imediata.
+    - Personalização: Conecte sutilmente a oferta aos itens favoritos do cliente apontados pelo SHAP (sem citar termos técnicos como "SHAP", "variável" ou "modelo").
+    - Tamanho: Máximo de 3 parágrafos curtos e diretos.
+    - Fechamento: Termine com um Call-to-Action (CTA) curto, direto e magnético (máximo 4 palavras, ex: "Resgatar Cupom Agora", "Pedir com Desconto").
     """
     
-    # Modelos ativos liberados para novas chaves de API
     candidate_models = [
         'gemini-3.8-flash',
         'gemini-3.8-flash-lite'
     ]
     
     for model_name in candidate_models:
-        # Tenta até 3 vezes cada modelo em caso de pico de demanda (503)
         for tentativa in range(1, 4):
             try:
                 response = client.models.generate_content(
                     model=model_name,
                     contents=prompt,
                 )
-                return f"[Gerado via {model_name}]\n\n{response.text}"
+                return f"[Gerado via {model_name} | {contexto_temporal}]\n\n{response.text}"
             except Exception as e:
                 erro_str = str(e)
                 if "503" in erro_str or "UNAVAILABLE" in erro_str:
-                    espera = tentativa * 3  # Espera 3s, 6s, 9s...
+                    espera = tentativa * 3
                     print(f"-> {model_name} ocupado (503). Tentativa {tentativa}/3: aguardando {espera}s...")
                     time.sleep(espera)
                 else:
                     print(f"-> Aviso ao usar {model_name}: {e}")
-                    break  # Se for outro erro, pula direto para o próximo modelo
+                    break
 
     return "[AVISO] Os servidores do Gemini estão temporariamente congestionados. Tente rodar novamente em alguns minutos."
