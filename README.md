@@ -2,13 +2,15 @@
 
 > **A oferta certa, no momento exato, para quem realmente vai comprar.**
 
-O **TargetAI** é um sistema de Inteligência Artificial de ponta a ponta desenvolvido para o setor de marketing digital e varejo. O projeto resolve o problema do envio indiscriminado de promoções ao combinar **Machine Learning Supervisionado**, **Otimização Financeira (Limiar Econômico)**, **IA Explicável (SHAP)** e **IA Generativa Contextual (Google Gemini)**.
+O **TargetAI** é um motor inteligente de recomendação e disparo de campanhas (*Propensity Modeling*) desenvolvido de ponta a ponta para o setor de marketing digital, delivery e varejo[cite: 2]. O sistema resolve o problema do envio genérico e indiscriminado de promoções — que gera desgaste da marca (*spam*) e desperdício de verba — ao cruzar dados demográficos e o histórico de consumo de cada cliente (renda, recência, frequência e gastos por categoria) para prever sua real probabilidade de adesão[cite: 2].
+
+Para transformar dados brutos em conversão imediata, a plataforma combina **Machine Learning Supervisionado**, **Otimização Financeira (Limiar Econômico)**, **IA Explicável (SHAP)** e **IA Generativa Contextual (Google Gemini)**[cite: 2]. O grande diferencial da ferramenta está na sua **inteligência temporal dinâmica**: antes de redigir a oferta, o sistema identifica automaticamente o dia da semana, o momento do mês e o horário exato da execução para alinhar o cupom à **refeição ou ocasião de consumo mais próxima** (como Almoço, Café da Tarde, Jantar, Sexta-feira à Noite ou economia de Fim de Mês), entregando mensagens curtas, bem-humoradas e com gatilhos de urgência altamente persuasivos.
 
 ---
 
 ## 🧠 Como o Sistema Funciona (Arquitetura)
 
-O fluxo operacional do **TargetAI** é dividido em 4 pilares:
+O fluxo operacional do **TargetAI** é dividido em 4 pilares integrados:
 
 1. **Previsão de Propensão (`src/pipeline_data.py` & `src/evaluation_models.py`):**
    - Utiliza particionamento rigoroso (**80% Treino/Validação** e **20% Teste Intocado**) para evitar vazamento de dados (*Data Leakage*).
@@ -21,9 +23,9 @@ O fluxo operacional do **TargetAI** é dividido em 4 pilares:
 3. **Explicabilidade Matemática (XAI com SHAP):**
    - Extrai via `TreeExplainer` quais atributos comportamentais e demográficos (ex.: recência de compra, gasto em carnes, frutas ou vinhos) impulsionaram a probabilidade de conversão daquele cliente específico.
 
-4. **Geração de Ofertas Contextuais em Tempo Real (`src/llm_integration.py`):**
-   - Detecta automaticamente o **dia da semana, dia do mês e horário atual** (ex.: Almoço, Café da Tarde, Jantar, Sexta-feira à Noite ou Fim do Mês).
-   - Cruza o contexto temporal com os fatores reais do SHAP e aciona o **Google Gemini** (com *exponential backoff* e *fallback* de modelos) para redigir uma campanha curta, bem-humorada, com cupom evidenciado logo no primeiro parágrafo e *Call-to-Action* direto.
+4. **Geração Dinâmica de Ofertas Contextuais (`src/llm_integration.py`):**
+   - **Sensor Temporal em Tempo Real:** Detecta automaticamente o dia da semana, dia do mês e hora exata do disparo para selecionar o gatilho contextual ideal (Almoço, Café da Tarde, Jantar, Sexta-feira à Noite ou Fim do Mês).
+   - **Copywriting Hiperpersonalizado:** Cruza o contexto da refeição/horário com os produtos favoritos revelados pelo SHAP e aciona o **Google Gemini** (com *exponential backoff* e *fallback* de modelos) para redigir uma campanha única, destacando o cupom logo no primeiro parágrafo e fechando com um *Call-to-Action* direto.
 
 ---
 
