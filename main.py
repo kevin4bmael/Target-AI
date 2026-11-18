@@ -13,7 +13,7 @@ from src.llm_integration import generate_targeted_marketing_copy
 
 def main():
     print("="*60)
-    print("SISTEMA INTELIGENTE DE PROPENSITY MODELING - CARCDSI")
+    print("TARGET AI | MOTOR DE PROPENSÃO E CAMPANHAS INTELIGENTES")
     print("="*60)
     
     data_path = 'data/ifood_df.csv'

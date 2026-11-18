@@ -16,7 +16,7 @@ def predict_new_customer(customer_df):
         return
 
     print("="*60)
-    print("MODO DE INFERÊNCIA EM PRODUÇÃO (MODELO PERSISTIDO)")
+    print("TARGET AI | MODO DE INFERÊNCIA E DISPARO CONTEXTUAL")
     print("="*60)
 
     # 1. Carregamento instantâneo do pipeline treinado
